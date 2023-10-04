@@ -1,4 +1,5 @@
 const listViewRouter = require("./list-view-router");
+const listEditRouter = require("./list-edit-router");
 const tasks = require("./tasks.json");
 const express = require("express");
 const app = express();
@@ -12,6 +13,7 @@ app.get("/tasks", (req, res) => {
 
 // Usar el enrutador en la ruta deseada
 app.use("/list", listViewRouter);
+app.use("/", listEditRouter);
 
 // Iniciar el servidor
 app.listen(port, () => {
