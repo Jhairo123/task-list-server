@@ -67,6 +67,14 @@ router.put("/", [checkId, checkTask], (req, res) => {
   res.send({ users: tasks });
 });
 
+/**
+ * The function checks if both the title and description are provided in the request parameters or query
+ * @param {Object} req - The Express request object.
+ * @param {Object} res - The Express response object.
+ * @param next - Callback function to pass control to the next middleware or route handler.
+ * @returns a response with a message if the id is not
+ * found in the tasks array.
+ */
 function checkTask(req, res, next) {
   const title =
     req.params.title == undefined ? req.query.title : req.params.title;
@@ -75,14 +83,22 @@ function checkTask(req, res, next) {
       ? req.query.description
       : req.params.description;
   if (title && description) next();
-  else res.status(400).send("The title and description are required");
+  else return res.status(400).send("The title and description are required");
 }
 
+/**
+ * The function checks if a given id exists in a list of tasks and returns a response accordingly.
+ * @param {Object} req - The Express request object.
+ * @param {Object} res - The Express response object.
+ * @param next - Callback function to pass control to the next middleware or route handler.
+ * @returns a response with a message if the id is not
+ * found in the tasks array.
+ */
 function checkId(req, res, next) {
-  console.log(req.params.id == undefined);
   const id = req.params.id == undefined ? req.query.id : req.params.id;
 
   if (tasks.find((task) => task.id == id)) next();
-  else res.status(400).send("Id don't exist");
+  else return res.status(400).send("Id don't exist");
 }
+
 module.exports = router;
