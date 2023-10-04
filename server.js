@@ -1,9 +1,10 @@
-const listViewRouter = require("./list-view-router");
-const listEditRouter = require("./list-edit-router");
+const listViewRouter = require("./routes/list-view-router");
+const listEditRouter = require("./routes/list-edit-router");
 const tasks = require("./tasks.json");
 const express = require("express");
 const app = express();
-const port = 3000;
+require("dotenv").config();
+const port = process.env.PORT;
 
 /**
  * HTTP GET method to get a tasks list.
@@ -33,4 +34,9 @@ app.listen(port, () => {
       `Get task list completed: http://localhost:${port}/tasks/incomplete`
   );
 });
+
+//PUT http://localhost:3000/task?id=&title=Task_1&description=Write_a_new_task
+//DELETE http://localhost:3000/task/2
+//POST
+
 module.exports = app;
