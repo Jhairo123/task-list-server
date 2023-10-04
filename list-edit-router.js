@@ -11,7 +11,7 @@ router.use(express.json());
  * @param {string} req.body.description - The description for the task.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.post("/", (req, res) => {
+router.post("/", checkTask, (req, res) => {
   const title = req.body.title;
   const description = req.body.description;
   const index = tasks.length;
@@ -35,7 +35,7 @@ router.post("/", (req, res) => {
  * @param {number} req.params.id - The id is a unique identifier for each task.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.delete("/:id", (req, res) => {
+router.delete("/:id", checkId, (req, res) => {
   const id = req.params.id;
   //Filter and delete specific task by his id
   tasks = tasks.filter((task) => task.id != id);
@@ -52,11 +52,11 @@ router.delete("/:id", (req, res) => {
  * @param {string} req.query.description - The new description for the task.
  * @returns {JSON} -  An array of objects that contains all tasks.
  */
-router.put("/", (req, res) => {
+router.put("/", [checkId, checkTask], (req, res) => {
   const id = req.query.id;
   const title = req.query.title;
   const description = req.query.description;
-  const updateTask = tasks.map((task) => {
+  tasks = tasks.map((task) => {
     //searchs the task
     if (task.id == id)
       // if the task exists, it is updated
@@ -64,7 +64,25 @@ router.put("/", (req, res) => {
     else return task;
   });
   //sends a reply with the updated task list
-  res.send({ users: updateTask });
+  res.send({ users: tasks });
 });
 
+function checkTask(req, res, next) {
+  const title =
+    req.params.title == undefined ? req.query.title : req.params.title;
+  const description =
+    req.params.description == undefined
+      ? req.query.description
+      : req.params.description;
+  if (title && description) next();
+  else res.status(400).send("The title and description are required");
+}
+
+function checkId(req, res, next) {
+  console.log(req.params.id == undefined);
+  const id = req.params.id == undefined ? req.query.id : req.params.id;
+
+  if (tasks.find((task) => task.id == id)) next();
+  else res.status(400).send("Id don't exist");
+}
 module.exports = router;
