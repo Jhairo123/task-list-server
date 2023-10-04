@@ -5,18 +5,32 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
+/**
+ * HTTP GET method to get a tasks list.
+ *
+ * @route GET /tasks
+ * @returns {JSON} - An object containing the list of tasks.
+ */
 app.get("/tasks", (req, res) => {
   res.status(200).send({ tasks: tasks });
 });
 
-// Importar el enrutador
+app.use("/tasks", listViewRouter);
+app.use("/task", listEditRouter);
 
-// Usar el enrutador en la ruta deseada
-app.use("/list", listViewRouter);
-app.use("/", listEditRouter);
-
-// Iniciar el servidor
+/**
+ * Starts the server to listen for incoming requests.
+ *
+ * @param {number} port - The port on which the server will run.
+ */
 app.listen(port, () => {
-  console.log(`Servidor en funcionamiento en http://localhost:${port}/tasks`);
+  console.log(`Server on`);
+  console.log(
+    `Get task list: http://localhost:${port}/tasks` +
+      "\n" +
+      `Get task list completed: http://localhost:${port}/tasks/completed` +
+      "\n" +
+      `Get task list completed: http://localhost:${port}/tasks/incomplete`
+  );
 });
 module.exports = app;

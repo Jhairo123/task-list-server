@@ -2,12 +2,9 @@ let tasks = require("./tasks.json");
 const express = require("express");
 const router = express.Router();
 router.use(express.json());
-//Body
-//{"title": "Tasks 1","description": "Read a book"}
-//localhost:3000/task
 
 /**
- * Creates a new task and adds it to the task list, uses the HTTP POST method.
+ * HTTP POST method to create a new task and add it to the task list.
  *
  * @route POST /
  * @param {string} req.body.title - The title for the task.
@@ -24,17 +21,15 @@ router.post("/", (req, res) => {
     title: title,
     description: description,
   };
-  // Agrega la nueva tarea a la lista de tareas
+  // Add a new task into task list
   tasks = [...tasks, newTask];
   if (index >= 1) tasks[index].id = tasks[index - 1].id + 1;
-  // Envía una respuesta con la lista de tareas actualizada
+  //sends a reply with the updated task list
   res.send({ tasks: tasks });
 });
 
-//http://localhost:3000/task/1
-
 /**
- * Delete a task for his id, uses the HTTP DELETE method.
+ * HTTP DELETE method to delete a task by its id.
  *
  * @route DELETE /:id.
  * @param {number} req.params.id - The id is a unique identifier for each task.
@@ -48,9 +43,8 @@ router.delete("/:id", (req, res) => {
   res.send({ tasks: tasks });
 });
 
-//http://localhost:3000/task?id=1&title=Example_task&description=this_is_an_example
 /**
- * Updates a task by his id, uses the HTTP PUT method.
+ * HTTP PUT method to update a task by its id.
  *
  * @route PUT /.
  * @param {number} req.query.id - The id of the task.
