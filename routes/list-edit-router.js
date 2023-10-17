@@ -11,18 +11,6 @@ router.use(express.json());
  * @param {string} req.body.description - The description for the task.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.post("/", (req, res, next) => {
-  const title = req.body.title;
-  const description = req.body.description;
-  const index = tasks.length;
-  const body = req.body;
-  if (Object.keys(body).length == 0 || !(title && description))
-    return res.status(400).send({
-      error: "The task is invalid for be send it",
-      require: "Title and description in the body",
-    });
-  next();
-});
 router.post("/", (req, res) => {
   const title = req.body.title;
   const description = req.body.description;
@@ -45,6 +33,20 @@ router.post("/", (req, res) => {
     tasks: tasks,
   });
 });
+
+router.post("/", (req, res, next) => {
+  const title = req.body.title;
+  const description = req.body.description;
+  const index = tasks.length;
+  const body = req.body;
+  if (Object.keys(body).length == 0 || !(title && description))
+    return res.status(400).send({
+      error: "The task is invalid for be send it",
+      require: "Title and description in the body",
+    });
+  next();
+});
+
 /**
  * HTTP DELETE method to delete a task by its id.
  *
@@ -52,7 +54,7 @@ router.post("/", (req, res) => {
  * @param {number} req.params.id - The id is a unique identifier for each task.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.delete("/:id", checkId, (req, res) => {
+router.delete("/:id", (req, res) => {
   const id = req.params.id;
   //Filter and delete specific task by his id
   tasks = tasks.filter((task) => task.id != id);
@@ -104,40 +106,5 @@ router.put("/:id", (req, res) => {
   //sends a reply with the updated task list
   res.send({ users: tasks });
 });
-
-/**
- * The function checks if both the title and description are provided in the request parameters or query
- * @param {Object} req - The Express request object.
- * @param {Object} res - The Express response object.
- * @param next - Callback function to pass control to the next middleware or route handler.
- * @returns a response with a message if the id is not
- * found in the tasks array.
- */
-function checkTask(req, res, next) {
-  const title =
-    req.params.title == undefined ? req.query.title : req.params.title;
-  const description =
-    req.params.description == undefined
-      ? req.query.description
-      : req.params.description;
-  console.log(req.query.title);
-  if (title && description) next();
-  else return res.status(400).send("The title and description are required");
-}
-
-/**
- * The function checks if a given id exists in a list of tasks and returns a response accordingly.
- * @param {Object} req - The Express request object.
- * @param {Object} res - The Express response object.
- * @param next - Callback function to pass control to the next middleware or route handler.
- * @returns a response with a message if the id is not
- * found in the tasks array.
- */
-function checkId(req, res, next) {
-  const id = req.params.id == undefined ? req.query.id : req.params.id;
-
-  if (tasks.find((task) => task.id == id)) next();
-  else return res.status(400).send("Id don't exist");
-}
 
 module.exports = router;

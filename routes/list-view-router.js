@@ -2,15 +2,12 @@ const tasks = require("../tasks.json");
 const express = require("express");
 const router = express.Router();
 
-router.use("/:endPoint", (req, res, next) => {
-  const endPoint = req.params.endPoint;
+router.use("/:endpoint", (req, res, next) => {
+  const endpoint = req.params.endpoint;
 
-  if (endPoint === "completed" || endPoint === "incomplete") {
-    // Si el parámetro es válido, continúa con la solicitud
-    next();
-  } else {
-    // Si el parámetro no es válido, responde con un error 400 (Solicitud incorrecta)
-    res.status(400).send("Parámetro 'filtro' no válido " + endPoint);
+  if (endpoint === "completed" || endpoint === "incomplete") next();
+  else {
+    res.status(400).send({ error: "invalid endpoint " + "/" + endpoint });
   }
 });
 
