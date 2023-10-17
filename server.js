@@ -1,6 +1,7 @@
 const listViewRouter = require("./routes/list-view-router");
 const listEditRouter = require("./routes/list-edit-router");
 const tasks = require("./tasks.json");
+
 const express = require("express");
 const app = express();
 require("dotenv").config();
@@ -49,7 +50,7 @@ app.use("/:endpoint", (req, res, next) => {
     if (!tasks.length == 0) return next();
     return res.status(400).send({
       error: "There are no tasks found",
-      require: "Must add a new task to be able to see it.",
+      message: "You must create at least one task to be able to display it",
     });
   } else res.status(400).send({ error: "invalid endpoint " + "/" + endpoint });
 });
