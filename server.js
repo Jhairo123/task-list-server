@@ -6,14 +6,13 @@ const app = express();
 require("dotenv").config();
 const port = process.env.PORT;
 
-/*
+/**
  *
  * Middleware to validate permitted HTTP methods(GET, POST, PUT o DELETE).
  *
- *
- * @param {object} req - The object of the Express request.
- * @param {object} res - The object of the response Express..
- * @param {function} next - The function to go to the next middleware.
+ * @param {number} req - The object of the Express request.
+ * @param {object} res - The object of the response Express.
+ * @param {function} next - The next middleware function.
  *
  * @returns {void} - It does not return any value directly. If the method is valid, it is passed to the next middleware.
  *                   If the method is invalid, an error is returned and no progress is made to the next middleware.
@@ -26,17 +25,27 @@ app.use("/", (req, res, next) => {
     method == "PUT" ||
     method == "DELETE"
   )
-    next();
+    return next();
   else
     return res.status(400).send({
       error: "The method HTTP is invalid for be send it",
     });
 });
 
+/**
+ * Middleware for handling endpoint validation.
+ *
+ * This middleware checks the provided endpoint parameter and enforces specific rules for certain endpoints.
+ *
+ * @param {object} req - The Express request object.
+ * @param {object} res - The Express response object.
+ * @param {function} next - The next middleware function.
+ *
+ * @returns {void} - No return value directly. It either continues to the next middleware or sends a response.
+ */
 app.use("/:endpoint", (req, res, next) => {
   const endpoint = req.params.endpoint;
-  if (endpoint == "tasks") {
-    console.log(endpoint);
+  if (endpoint === "tasks" || endpoint === "task") {
     if (!tasks.length == 0) return next();
     return res.status(400).send({
       error: "There are no tasks found",

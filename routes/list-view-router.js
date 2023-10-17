@@ -2,12 +2,27 @@ const tasks = require("../tasks.json");
 const express = require("express");
 const router = express.Router();
 
+/**
+ * Middleware for endpoint validation.
+ *
+ * This middleware checks the provided endpoint parameter to ensure it's a valid value.
+ * It allows only 'completed' and 'incomplete' endpoints. Any other endpoint is considered invalid.
+ *
+ * @param {object} req - The Express request object.
+ * @param {object} res - The Express response object.
+ * @param {function} next - The next middleware function.
+ *
+ * @returns {void} - No return value directly. It either continues to the next middleware for valid endpoints
+ *                   or sends an error response for an invalid endpoint.
+ */
 router.use("/:endpoint", (req, res, next) => {
   const endpoint = req.params.endpoint;
 
-  if (endpoint === "completed" || endpoint === "incomplete") next();
+  if (endpoint === "completed" || endpoint === "incomplete") return next();
   else {
-    res.status(400).send({ error: "invalid endpoint " + "/" + endpoint });
+    return res
+      .status(400)
+      .send({ error: "invalid endpoint " + "/" + endpoint });
   }
 });
 
