@@ -11,10 +11,24 @@ router.use(express.json());
  * @param {string} req.body.description - The description for the task.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.post("/", checkTask, (req, res) => {
+router.post("/", (req, res, next) => {
   const title = req.body.title;
   const description = req.body.description;
   const index = tasks.length;
+  const body = req.body;
+  if (Object.keys(body).length == 0 || !(title && description))
+    return res.status(400).send({
+      error: "The task is invalid for be send it",
+      require: "Title and description in the body",
+    });
+  next();
+});
+router.post("/", (req, res) => {
+  const title = req.body.title;
+  const description = req.body.description;
+  const index = tasks.length;
+  const body = req.body;
+
   const newTask = {
     id: index === 0 ? 1 : tasks.length,
     state: false,
@@ -25,9 +39,12 @@ router.post("/", checkTask, (req, res) => {
   tasks = [...tasks, newTask];
   if (index >= 1) tasks[index].id = tasks[index - 1].id + 1;
   //sends a reply with the updated task list
-  res.send({ tasks: tasks });
+  const arrayMessage = [{ message: "Task saved", countTask: tasks.length }];
+  return res.send({
+    information: arrayMessage,
+    tasks: tasks,
+  });
 });
-
 /**
  * HTTP DELETE method to delete a task by its id.
  *
@@ -43,6 +60,27 @@ router.delete("/:id", checkId, (req, res) => {
   res.send({ tasks: tasks });
 });
 
+router.put("/:id", (req, res, next) => {
+  const id = req.params.id;
+  const title = req.body.title;
+  const description = req.body.description;
+  const body = req.body;
+
+  if (Object.keys(body).length == 0 || !(title && description))
+    return res.status(400).send({
+      error: "The task is invalid for be send it",
+    });
+  else if (isNaN(id)) {
+    return res.status(400).send({
+      error: "The id isn't a number",
+    });
+  } else if (!tasks.find((task) => task.id == id))
+    return res.status(400).send({
+      error: "The task is not found",
+    });
+
+  next();
+});
 /**
  * HTTP PUT method to update a task by its id.
  *
@@ -52,10 +90,10 @@ router.delete("/:id", checkId, (req, res) => {
  * @param {string} req.query.description - The new description for the task.
  * @returns {JSON} -  An array of objects that contains all tasks.
  */
-router.put("/", [checkId, checkTask], (req, res) => {
-  const id = req.query.id;
-  const title = req.query.title;
-  const description = req.query.description;
+router.put("/:id", (req, res) => {
+  const id = req.params.id;
+  const title = req.body.title;
+  const description = req.body.description;
   tasks = tasks.map((task) => {
     //searchs the task
     if (task.id == id)
@@ -82,6 +120,7 @@ function checkTask(req, res, next) {
     req.params.description == undefined
       ? req.query.description
       : req.params.description;
+  console.log(req.query.title);
   if (title && description) next();
   else return res.status(400).send("The title and description are required");
 }
