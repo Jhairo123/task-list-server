@@ -6,9 +6,9 @@ router.use(express.json());
 /**
  * HTTP POST method to create a new task and add it to the task list.
  *
- * @route POST /
- * @param {string} req.body.title - The title for the task.
- * @param {string} req.body.description - The description for the task.
+ * @route POST /task
+ * @param {object} req - The Express request object.
+ * @param {object} res - The Express response object.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
 router.post("/", checkTask, (req, res) => {
@@ -25,14 +25,15 @@ router.post("/", checkTask, (req, res) => {
   tasks = [...tasks, newTask];
   if (index >= 1) tasks[index].id = tasks[index - 1].id + 1;
   //sends a reply with the updated task list
-  res.send({ tasks: tasks });
+  return res.send({ tasks: tasks });
 });
 
 /**
  * HTTP DELETE method to delete a task by its id.
  *
- * @route DELETE /:id.
- * @param {number} req.params.id - The id is a unique identifier for each task.
+ * @route DELETE /task/:id.
+ * @param {object} req - The Express request object.
+ * @param {object} res - The Express response object.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
 router.delete("/:id", checkId, (req, res) => {
@@ -40,65 +41,78 @@ router.delete("/:id", checkId, (req, res) => {
   //Filter and delete specific task by his id
   tasks = tasks.filter((task) => task.id != id);
   //sends a reply with the updated task list
-  res.send({ tasks: tasks });
+  return res.send({ tasks: tasks });
 });
 
 /**
  * HTTP PUT method to update a task by its id.
  *
- * @route PUT /.
- * @param {number} req.query.id - The id of the task.
- * @param {string} req.query.title - The new title for the task.
- * @param {string} req.query.description - The new description for the task.
+ * @route PUT /task/:id
+ * @param {object} req - The Express request object.
+ * @param {object} res - The Express response object.
  * @returns {JSON} -  An array of objects that contains all tasks.
  */
-router.put("/", [checkId, checkTask], (req, res) => {
-  const id = req.query.id;
+router.put("/:id", [checkId, checkTask], (req, res) => {
+  const id = req.params.id;
   const title = req.query.title;
   const description = req.query.description;
-  tasks = tasks.map((task) => {
-    //searchs the task
-    if (task.id == id)
-      // if the task exists, it is updated
-      return { ...task, title: title, description: description };
-    else return task;
-  });
+
+  const index = tasks.findIndex((task) => task.id == id);
+  tasks[index].title = title;
+  tasks[index].description = description;
   //sends a reply with the updated task list
-  res.send({ users: tasks });
+  return res.send({ users: tasks });
 });
 
 /**
- * The function checks if both the title and description are provided in the request parameters or query
+ * Middleware to validate the presence of 'title' and 'description' in the request body or query.
+ *
  * @param {Object} req - The Express request object.
  * @param {Object} res - The Express response object.
- * @param next - Callback function to pass control to the next middleware or route handler.
- * @returns a response with a message if the id is not
- * found in the tasks array.
+ * @param {function} next - The next middleware function.
+ * @returns a response with a message if the title and description is not
+ *          found.
  */
 function checkTask(req, res, next) {
-  const title =
-    req.params.title == undefined ? req.query.title : req.params.title;
-  const description =
-    req.params.description == undefined
-      ? req.query.description
-      : req.params.description;
-  if (title && description) next();
-  else return res.status(400).send("The title and description are required");
+  const method = req.method;
+  let title = "";
+  let description = "";
+  if (method == "POST") {
+    if (req.body.title && req.body.description) {
+      title = req.body.title;
+      description = req.body.description;
+      return next();
+    } else
+      return res
+        .status(400)
+        .send("The title and description are required in the body");
+  } else if (method == "PUT") {
+    if (req.query.title && req.query.description) {
+      title = req.query.title;
+      description = req.query.description;
+      return next();
+    } else
+      return res
+        .status(400)
+        .send("The title and description are required in the query");
+  }
 }
 
 /**
- * The function checks if a given id exists in a list of tasks and returns a response accordingly.
+ * Middleware to verify the validity of an ID in the request parameters
+ *
  * @param {Object} req - The Express request object.
  * @param {Object} res - The Express response object.
- * @param next - Callback function to pass control to the next middleware or route handler.
+ * @param {function} next - The next middleware function.
  * @returns a response with a message if the id is not
- * found in the tasks array.
+ *          found in the tasks array.
  */
 function checkId(req, res, next) {
-  const id = req.params.id == undefined ? req.query.id : req.params.id;
-
-  if (tasks.find((task) => task.id == id)) next();
-  else return res.status(400).send("Id don't exist");
+  let id = req.params.id;
+  if (isNaN(id))
+    return res.status(400).send("The id is require a number in the params");
+  else if (id && tasks.find((task) => task.id == id)) return next();
+  else return res.status(400).send("The id does not exist");
 }
 
 module.exports = router;

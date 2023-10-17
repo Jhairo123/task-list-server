@@ -13,7 +13,7 @@ const port = process.env.PORT;
  * @returns {JSON} - An object containing the list of tasks.
  */
 app.get("/tasks", (req, res) => {
-  res.status(200).send({ tasks: tasks });
+  return res.status(200).send({ tasks: tasks });
 });
 
 app.use("/tasks", listViewRouter);
