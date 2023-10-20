@@ -1,6 +1,6 @@
 const listViewRouter = require("./routes/list-view-router");
 const listEditRouter = require("./routes/list-edit-router");
-const tasks = require("./tasks.json");
+const tasks = require("./utils/tasks.json");
 
 const express = require("express");
 const app = express();
@@ -84,7 +84,7 @@ app.listen(port, () => {
   );
 });
 
-//PUT http://localhost:3000/task?id=&title=Task_1&description=Write_a_new_task
+//PUT http://localhost:3000/task/2 {  "title"="Task 1", "description"="Write a new task" }
 //DELETE http://localhost:3000/task/2
 
 module.exports = app;

@@ -1,4 +1,4 @@
-let tasks = require("../tasks.json");
+let tasks = require("../utils/tasks.json");
 const express = require("express");
 const router = express.Router();
 router.use(express.json());
@@ -77,7 +77,6 @@ router.put("/:id", (req, res, next) => {
 router.use("/:id", (req, res, next) => {
   const id = req.params.id;
   const method = req.method;
-  console.log(method);
   if (method == "DELETE" || method == "PUT") {
     if (isNaN(id)) {
       return res.status(400).send({
@@ -150,10 +149,13 @@ router.put("/:id", (req, res) => {
   const id = req.params.id;
   const title = req.body.title;
   const description = req.body.description;
+  const state = req.body.state;
 
   const index = tasks.findIndex((task) => task.id == id);
   tasks[index].title = title;
   tasks[index].description = description;
+  if (state) tasks[index].state = state;
+
   //sends a reply with the updated task list
   return res.send({ users: tasks });
 });
