@@ -1,4 +1,10 @@
 const jwt = require("jsonwebtoken");
+
+const users = [
+  { id: 1, email: "correo@gmail.com", password: "contrasena1", rol: "user" },
+  { id: 2, email: "correo1@gmail.com", password: "contrasena2", rol: "user" },
+];
+
 function authenticateUser(req, res, next) {
   const dataUser = req.body;
   if (-1 === users.findIndex((user) => user.email === req.body.email))
