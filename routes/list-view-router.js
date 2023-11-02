@@ -1,4 +1,4 @@
-const JWTValidation = require("../server");
+const { JWTValidation } = require("../middleware/middle.js");
 let tasks = require("../utils/tasks.json");
 const express = require("express");
 const router = express.Router();
@@ -44,7 +44,7 @@ router.get("/completed", JWTValidation, (req, res) => {
  * @route GET /incomplete
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.get("/incomplete", (req, res) => {
+router.get("/incomplete", JWTValidation, (req, res) => {
   const incompleteTasks = tasks.filter((task) => task.state === false);
   return res.status(200).send({ tasks: incompleteTasks });
 });

@@ -1,5 +1,5 @@
+const { JWTValidation } = require("../middleware/middle.js");
 let tasks = require("../utils/tasks.json");
-const JWTValidation = require("../server");
 const express = require("express");
 const router = express.Router();
 router.use(express.json());

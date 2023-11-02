@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
-const listViewRouter = require("./routes/list-view-router");
-const listEditRouter = require("./routes/list-edit-router");
-const tasks = require("./utils/tasks.json");
+const { JWTValidation, authenticateUser } = require("./middleware/middle.js");
+const listViewRouter = require("../routes/list-view-router");
+const listEditRouter = require("../routes/list-edit-router");
+const tasks = require("../utils/tasks.json");
 
 const express = require("express");
 const app = express();
@@ -43,28 +44,6 @@ app.post("/login", authenticateUser, (req, res) => {
   }
   return res.json({ token });
 });
-
-function authenticateUser(req, res, next) {
-  const dataUser = req.body;
-  if (-1 === users.findIndex((user) => user.email === req.body.email))
-    return res.status(401).send({ error: "Invalid user name or password" });
-  else return next();
-}
-
-function JWTValidation(req, res, next) {
-  const token = req.headers.authorization;
-
-  try {
-    const decodeToken = jwt.verify(token, process.env.SECRET_KEY, {
-      expiresIn: "30s",
-    });
-    req.rol = decodeToken.rol;
-    console.log(req.rol);
-  } catch (error) {
-    return res.json({ error: "Token inválido o expirado" });
-  }
-  return next();
-}
 
 app.use("/", JWTValidation, (req, res, next) => {
   const method = req.method;
@@ -139,4 +118,6 @@ app.listen(port, () => {
 //PUT http://localhost:3000/task/2 {  "title"="Task 1", "description"="Write a new task" }
 //DELETE http://localhost:3000/task/2
 
-module.exports = JWTValidation;
+//No puedo acceder a los middlewares
+//Error: Cannot find module '../middleware/middle.js'
+module.exports = app;
