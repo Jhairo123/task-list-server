@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const listViewRouter = require("./routes/list-view-router");
 const listEditRouter = require("./routes/list-edit-router");
 const tasks = require("./utils/tasks.json");
@@ -5,7 +6,13 @@ const tasks = require("./utils/tasks.json");
 const express = require("express");
 const app = express();
 require("dotenv").config();
+app.use(express.json());
 const port = process.env.PORT;
+
+const users = [
+  { id: 1, email: "correo@gmail.com", password: "contrasena1", rol: "user" },
+  { id: 2, email: "correo1@gmail.com", password: "contrasena2", rol: "user" },
+];
 
 /**
  *
@@ -18,19 +25,64 @@ const port = process.env.PORT;
  * @returns {void} - It does not return any value directly. If the method is valid, it is passed to the next middleware.
  *                   If the method is invalid, an error is returned and no progress is made to the next middleware.
  */
-app.use("/", (req, res, next) => {
+
+app.post("/login", authenticateUser, (req, res) => {
+  const USER_EMAIL_BD = "correo@gmail.com";
+  const USER_PASS_DB = "unodostres";
+  const dataUser = req.body;
+
+  if (dataUser.email == USER_EMAIL_BD && dataUser.password == USER_PASS_DB) {
+    const index = users.findIndex((user) => user.email === req.body.email);
+    const payload = {
+      email: users[index].email,
+      password: users[index].password,
+      rol: users[index].rol,
+    };
+    console.log(jwt.sign(payload, process.env.SECRET_KEY));
+    token = jwt.sign(payload, process.env.SECRET_KEY);
+  }
+  return res.json({ token });
+});
+
+function authenticateUser(req, res, next) {
+  const dataUser = req.body;
+  if (-1 === users.findIndex((user) => user.email === req.body.email))
+    return res.status(401).send({ error: "Invalid user name or password" });
+  else return next();
+}
+
+function JWTValidation(req, res, next) {
+  const token = req.headers.authorization;
+
+  try {
+    const decodeToken = jwt.verify(token, process.env.SECRET_KEY, {
+      expiresIn: "30s",
+    });
+    req.rol = decodeToken.rol;
+    console.log(req.rol);
+  } catch (error) {
+    return res.json({ error: "Token inválido o expirado" });
+  }
+  return next();
+}
+
+app.use("/", JWTValidation, (req, res, next) => {
   const method = req.method;
+
   if (
     method == "GET" ||
     method == "POST" ||
     method == "PUT" ||
     method == "DELETE"
   )
-    return next();
+    next();
   else
-    return res.status(400).send({
+    res.status(400).send({
       error: "The method HTTP is invalid for be send it",
     });
+  if ("user" === req.rol) return next();
+  else res.status(400).json({ error: "Access not allowed" });
+  next();
 });
 
 /**
@@ -61,7 +113,7 @@ app.use("/:endpoint", (req, res, next) => {
  * @route GET /tasks
  * @returns {JSON} - An object containing the list of tasks.
  */
-app.get("/tasks", (req, res) => {
+app.get("/tasks", JWTValidation, (req, res) => {
   return res.status(200).send({ tasks: tasks });
 });
 
@@ -87,4 +139,4 @@ app.listen(port, () => {
 //PUT http://localhost:3000/task/2 {  "title"="Task 1", "description"="Write a new task" }
 //DELETE http://localhost:3000/task/2
 
-module.exports = app;
+module.exports = JWTValidation;

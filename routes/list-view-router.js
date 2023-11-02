@@ -1,3 +1,4 @@
+const JWTValidation = require("../server");
 let tasks = require("../utils/tasks.json");
 const express = require("express");
 const router = express.Router();
@@ -32,7 +33,7 @@ router.use("/:endpoint", (req, res, next) => {
  * @route GET /completed
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.get("/completed", (req, res) => {
+router.get("/completed", JWTValidation, (req, res) => {
   const completedTask = tasks.filter((task) => task.state === true);
   return res.send({ tasks: completedTask });
 });

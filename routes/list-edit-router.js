@@ -1,4 +1,5 @@
 let tasks = require("../utils/tasks.json");
+const JWTValidation = require("../server");
 const express = require("express");
 const router = express.Router();
 router.use(express.json());
@@ -98,7 +99,7 @@ router.use("/:id", (req, res, next) => {
  * @param {object} res - The Express response object.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.post("/", (req, res) => {
+router.post("/", JWTValidation, (req, res) => {
   const title = req.body.title;
   const description = req.body.description;
   const index = tasks.length;
@@ -129,7 +130,7 @@ router.post("/", (req, res) => {
  * @param {object} res - The Express response object.
  * @returns {JSON} - An array of objects that contains all tasks.
  */
-router.delete("/:id", (req, res) => {
+router.delete("/:id", JWTValidation, (req, res) => {
   const id = req.params.id;
   //Filter and delete specific task by his id
   tasks = tasks.filter((task) => task.id != id);
@@ -145,7 +146,7 @@ router.delete("/:id", (req, res) => {
  * @param {object} res - The Express response object.
  * @returns {JSON} -  An array of objects that contains all tasks.
  */
-router.put("/:id", (req, res) => {
+router.put("/:id", JWTValidation, (req, res) => {
   const id = req.params.id;
   const title = req.body.title;
   const description = req.body.description;
