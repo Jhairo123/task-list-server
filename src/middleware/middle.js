@@ -16,11 +16,8 @@ function JWTValidation(req, res, next) {
   const token = req.headers.authorization;
 
   try {
-    const decodeToken = jwt.verify(token, process.env.SECRET_KEY, {
-      expiresIn: "30s",
-    });
+    const decodeToken = jwt.verify(token, process.env.SECRET_KEY);
     req.rol = decodeToken.rol;
-    console.log(req.rol);
   } catch (error) {
     return res.json({ error: "Token inválido o expirado" });
   }

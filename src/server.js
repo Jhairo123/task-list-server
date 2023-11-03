@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { JWTValidation, authenticateUser } = require("./middleware/middle.js");
-const listViewRouter = require("../routes/list-view-router");
-const listEditRouter = require("../routes/list-edit-router");
+const listViewRouter = require("./routes/list-view-router.js");
+const listEditRouter = require("./routes/list-edit-router.js");
 const tasks = require("../utils/tasks.json");
 
 const express = require("express");
@@ -34,13 +34,15 @@ app.post("/login", authenticateUser, (req, res) => {
 
   if (dataUser.email == USER_EMAIL_BD && dataUser.password == USER_PASS_DB) {
     const index = users.findIndex((user) => user.email === req.body.email);
+
     const payload = {
       email: users[index].email,
       password: users[index].password,
       rol: users[index].rol,
     };
-    console.log(jwt.sign(payload, process.env.SECRET_KEY));
-    token = jwt.sign(payload, process.env.SECRET_KEY);
+    token = jwt.sign(payload, process.env.SECRET_KEY, {
+      expiresIn: "1m",
+    });
   }
   return res.json({ token });
 });
