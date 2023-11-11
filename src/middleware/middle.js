@@ -6,8 +6,13 @@ const users = [
 ];
 
 function authenticateUser(req, res, next) {
-  const dataUser = req.body;
-  if (-1 === users.findIndex((user) => user.email === req.body.email))
+  if (
+    -1 ===
+    users.findIndex(
+      (user) =>
+        user.email === req.body.email && user.password === req.body.password
+    )
+  )
     return res.status(401).send({ error: "Invalid user name or password" });
   else return next();
 }
@@ -18,6 +23,10 @@ function JWTValidation(req, res, next) {
   try {
     const decodeToken = jwt.verify(token, process.env.SECRET_KEY);
     req.rol = decodeToken.rol;
+    if (req.role === "user") return next();
+    // Si el usuario no es un administrador y está intentando acceder a /admin, denegar el acceso
+    else if (req.role === "admin")
+      return res.status(403).json({ error: "No tienes acceso a esta ruta" });
   } catch (error) {
     return res.json({ error: "Token inválido o expirado" });
   }
