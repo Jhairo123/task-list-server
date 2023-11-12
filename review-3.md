@@ -20,11 +20,11 @@ Se ha diseñado para ayudar a los usuarios a administrar y organizar sus activid
 
 Tasks List es la mejor opcion para recibir y procesar solicitudes de los clientes de una manera agil, eficaz y segura
 
-> - [x] autenticación
->       Es el proceso mediante el cual verificamos la identidad de un usuario, generalmente a través de un par de credenciales, como un nombre de usuario y una contraseña. En este contexto, utilizaremos JSON Web Tokens (JWT) como una forma efectiva de gestionar la autenticación, lo que permitirá a los usuarios acceder de manera segura a los recursos de nuestra aplicación.
+> - [x] autenticación <br>
+> Es el proceso mediante el cual verificamos la identidad de un usuario, generalmente a través de un par de credenciales, como un nombre de usuario y una contraseña. En este contexto, utilizaremos JSON Web Tokens (JWT) como una forma efectiva de gestionar la autenticación, lo que permitirá a los usuarios acceder de manera segura a los recursos de nuestra aplicación.
 
-> - [x] Autorización
->       En este contexto, la autorización se refiere a los permisos otorgados a diferentes tipos de clientes que realizan solicitudes a nuestro servidor web. Estos permisos se utilizan para limitar las acciones que cada tipo de cliente puede realizar, con el objetivo de proteger recursos web que contienen información sensible. Esto asegura que solo los usuarios autorizados puedan acceder y realizar operaciones en estos recursos.
+> - [x] Autorización <br>
+> Se refiere a los permisos otorgados a diferentes tipos de clientes que realizan solicitudes a nuestro servidor web. Estos permisos se utilizan para limitar las acciones que cada tipo de cliente puede realizar, con el objetivo de proteger recursos web que contienen información sensible. Esto asegura que solo los usuarios autorizados puedan acceder y realizar operaciones en estos recursos.
 
 ---
 
